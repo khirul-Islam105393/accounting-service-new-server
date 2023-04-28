@@ -3,8 +3,10 @@ const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const fileUpload = require("express-fileupload");
 const mg = require("nodemailer-mailgun-transport");
 require("dotenv").config();
+const bodyParser = require("body-parser");
 // const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const port = 5000;
@@ -12,6 +14,9 @@ const port = 5000;
 const app = express();
 
 // middleware
+app.use(bodyParser.json({ limit: "1mb" }));
+
+app.use(fileUpload());
 app.use(cors());
 app.use(express.json());
 const uri = `mongodb+srv://accounting_service:3zq2u6aDn2YjtAcr@cluster0.ugczoqc.mongodb.net/?retryWrites=true&w=majority`;
@@ -184,8 +189,8 @@ async function run() {
     });
 
     app.post("/addReview", (req, res) => {
-      console.log(req.body);
       const review = req.body;
+      console.log(review);
 
       reviewCollection.insertOne(review).then((result) => {
         res.send(result.acknowledged);
